@@ -1,0 +1,59 @@
+-name: Build KataGo
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+      - name: Build KataGo
+        run: |
+          git clone https://github.com/lightvector/KataGo.git
+          cd KataGo
+          git checkout master
+          git pull
+          git checkout 8397628525503496881664669141
+          cd ../
+          mvn -B package --file KataGo/pom.xml
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: KataGo
+          path: KataGo/target/KataGo-1.4.5-SNAPSHOT-jar-with-dependencies.jar
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: KataGo-config
+          path: KataGo/config/
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: KataGo-weights
+          path: KataGo/weights/
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: KataGo-models
+          path: KataGo/models/
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: KataGo-analysis
+          path: KataGo/analysis/
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: KataGo-analysis-old
+          path: KataGo/analysis-old/
+
